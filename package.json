@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ffprobe": "^1.1.2",
+    "ffprobe-static": "^3.1.0",
     "play-sound": "^1.1.6"
   }
 }
