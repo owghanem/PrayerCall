@@ -25,21 +25,4 @@ async function getAudioDuration(audioPath) {
     });
 }
 
-getAudioDuration('./media/fajrAthan.mp3')
-
-// async function getAudioDuration(audioPath) {
-//     await ffprobe(audioPath, { path: ffprobeStatic.path }, (err, info) => {
-//         if (err) {
-//             console.error('Error while probing Audio:', err)
-//             return
-//         }
-//         if (info.streams[0].duration) {
-//             const duration = parseInt(info.streams[0].duration.replace('.', ''))
-//             return duration
-//         } else {
-//             console.error('Could not get duration of the audio file.')
-//         }
-//     })
-// }
-
 module.exports = getAudioDuration
