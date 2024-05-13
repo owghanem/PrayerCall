@@ -14,9 +14,10 @@ async function fetchPrayerTimes() {
     const currentMonthName = currentTime.toLocaleString('default', { month: 'long' })
     const filePath = `./data/${currentMonthName}PrayerTimes.json`
     try {
-        const fileExists = await fs.promises.access(filePath, err => { if (err) console.error(err) }).then(() => true).catch(() => false)
+        const fileExists = await fs.promises.access(filePath).then(() => true).catch(() => false)
 
         if (!fileExists) {
+            await fs.promises.mkdir('./data', { recursive: true }, err => { if (err) console.error(err) });
             const files = await fs.promises.readdir('./data', err => { if (err) console.error(err) });
             await Promise.all(files.map(file => fs.unlink(`./data/${file}`, err => { if (err) console.error(err) })));
 

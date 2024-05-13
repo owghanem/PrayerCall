@@ -28,12 +28,14 @@ async function checkNextPrayer(currentHour, currentMinute, currentDay, filePath)
         const prayerTime = todaysPrayerTimes[prayerName]
         const prayerTimeHH = parseInt(prayerTime.substring(0, 2))
         const prayerTimeMM = parseInt(prayerTime.substring(3, 5))
+        const lastPrayerHH = parseInt(todaysPrayerTimes['isha'].substring(0, 2))
+        const lastPrayerMM = parseInt(todaysPrayerTimes['isha'].substring(3, 5))
 
         if ((currentHour < prayerTimeHH || currentHour === prayerTimeHH && currentMinute <= prayerTimeMM)) {
             return new nextPrayer(prayerName, prayerTime, false)
         }
 
-        else if (currentHour === parseInt(todaysPrayerTimes['isha'].substring(0, 2)) && currentMinute > parseInt(todaysPrayerTimes['isha'].substring(3, 5))) {
+        else if (currentHour > lastPrayerHH || currentHour === lastPrayerHH && currentMinute > lastPrayerMM) {
             const tomorrowsPrayerTimes = new prayersOfTheDay(prayerTimesFile, currentDay + 1)
             const firstPrayerName = Object.keys(tomorrowsPrayerTimes)[0]
             const firstPrayerTime = tomorrowsPrayerTimes[firstPrayerName]
