@@ -1,48 +1,46 @@
-class prayersOfTheDay {
+class PrayersOfTheDay {
     constructor(prayerTimesFile, currDay) {
-        this.fajr = prayerTimesFile.data[currDay - 1].timings.Fajr.substring(0, 5)
-        this.duhr = prayerTimesFile.data[currDay - 1].timings.Dhuhr.substring(0, 5)
-        this.asr = prayerTimesFile.data[currDay - 1].timings.Asr.substring(0, 5)
-        this.maghrib = prayerTimesFile.data[currDay - 1].timings.Maghrib.substring(0, 5)
-        this.isha = prayerTimesFile.data[currDay - 1].timings.Isha.substring(0, 5)
+        this.fajr = new Date(prayerTimesFile.data[currDay - 1].timings.Fajr)
+        this.duhr = new Date(prayerTimesFile.data[currDay - 1].timings.Dhuhr)
+        this.asr = new Date(prayerTimesFile.data[currDay - 1].timings.Asr)
+        this.maghrib = new Date(prayerTimesFile.data[currDay - 1].timings.Maghrib)
+        this.isha = new Date(prayerTimesFile.data[currDay - 1].timings.Isha)
     }
 }
 
-class nextPrayer {
-    constructor(name, time, firstPrayerOfTheDay) {
+class NextPrayer {
+    constructor(name, time) {
         this.name = name
         this.time = time
-        this.firstPrayerOfTheDay = firstPrayerOfTheDay
     }
 }
 
-async function checkNextPrayer(currentHour, currentMinute, currentDay, filePath) {
+async function checkNextPrayer(currentTime, filePath) {
     // Object -> Number
     // Checks the time of the Next Prayer
     // !!Write Tests
-
     const prayerTimesFile = require('.' + filePath)
-    const todaysPrayerTimes = new prayersOfTheDay(prayerTimesFile, currentDay)
+    const todaysPrayerTimes = new PrayersOfTheDay(prayerTimesFile, currentTime.getDate())
+
+    let nextPrayer
 
     for (const prayerName in todaysPrayerTimes) {
         const prayerTime = todaysPrayerTimes[prayerName]
-        const prayerTimeHH = parseInt(prayerTime.substring(0, 2))
-        const prayerTimeMM = parseInt(prayerTime.substring(3, 5))
-        const lastPrayerHH = parseInt(todaysPrayerTimes['isha'].substring(0, 2))
-        const lastPrayerMM = parseInt(todaysPrayerTimes['isha'].substring(3, 5))
-
-        if ((currentHour < prayerTimeHH || currentHour === prayerTimeHH && currentMinute <= prayerTimeMM)) {
-            return new nextPrayer(prayerName, prayerTime, false)
-        }
-
-        else if (currentHour > lastPrayerHH || currentHour === lastPrayerHH && currentMinute > lastPrayerMM) {
-            const tomorrowsPrayerTimes = new prayersOfTheDay(prayerTimesFile, currentDay + 1)
-            const firstPrayerName = Object.keys(tomorrowsPrayerTimes)[0]
-            const firstPrayerTime = tomorrowsPrayerTimes[firstPrayerName]
-
-            return new nextPrayer(firstPrayerName, firstPrayerTime, true)
+        if (prayerTime >= currentTime) {
+            nextPrayer = new NextPrayer(prayerName, prayerTime)
+            break
         }
     }
+
+    if (!nextPrayer && currentTime > todaysPrayerTimes["isha"]) {
+        const nextDayPrayers = new PrayersOfTheDay(prayerTimesFile, currentTime.getDate() + 1)
+        nextPrayer = new NextPrayer("fajr", nextDayPrayers["fajr"])
+    }
+
+    return nextPrayer
 }
+
+
+// checkNextPrayer(date, './data/NovemberPrayerTimes.json')
 
 module.exports = checkNextPrayer
