@@ -51,7 +51,7 @@ async function checkTimeAndExecute(date) {
 
 /* This is only for testing */
 
-const time = new Date('2024-12-25T06:51:45')
-checkTimeAndExecute(time)
+// const time = new Date('2024-12-25T06:51:45')
+// checkTimeAndExecute(time)
 
 module.exports = { checkTimeAndExecute }
