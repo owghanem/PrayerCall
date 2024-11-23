@@ -1,3 +1,5 @@
+const fetchPrayerTimes = require("./fetchPrayerTimes")
+
 class PrayersOfTheDay {
     constructor(prayerTimesFile, currDay) {
         this.fajr = new Date(prayerTimesFile.data[currDay - 1].timings.Fajr)
@@ -26,21 +28,27 @@ async function checkNextPrayer(currentTime, filePath) {
 
     for (const prayerName in todaysPrayerTimes) {
         const prayerTime = todaysPrayerTimes[prayerName]
-        if (prayerTime >= currentTime) {
+        
+        // Think about the condition, do you want it to ring exactly on minute start or within the minute
+        if (prayerTime - currentTime >= -60000) {
             nextPrayer = new NextPrayer(prayerName, prayerTime)
             break
         }
     }
 
     if (!nextPrayer && currentTime > todaysPrayerTimes["isha"]) {
-        const nextDayPrayers = new PrayersOfTheDay(prayerTimesFile, currentTime.getDate() + 1)
+        const YYYY = currentTime.getFullYear()
+        const MM = currentTime.getMonth()
+        const DD = currentTime.getDate()
+
+        const newDate = new Date(YYYY, MM, DD + 1)
+        const newPath = await fetchPrayerTimes(newDate)
+        const prayerTimesFile = require('.' + newPath)
+        const nextDayPrayers = new PrayersOfTheDay(prayerTimesFile, newDate.getDate())
         nextPrayer = new NextPrayer("fajr", nextDayPrayers["fajr"])
     }
 
     return nextPrayer
 }
-
-
-// checkNextPrayer(date, './data/NovemberPrayerTimes.json')
 
 module.exports = checkNextPrayer

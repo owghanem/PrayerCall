@@ -1,13 +1,13 @@
 const fs = require('fs');
+require('dotenv').config()
 
-async function fetchPrayerTimes() {
+async function fetchPrayerTimes(date) {
     // Link -> filePath
     // Fetches Prayer times from an API, saves it and returns where was it saved
     // !!Write tests
-
-    const city = 'Dortmund'
-    const country = 'Germany'
-    const currentTime = new Date();
+    const city = process.env.CITY
+    const country = process.env.COUNTRY
+    const currentTime = date
     const currentYear = currentTime.getFullYear()
     const currentMonth = currentTime.getMonth()
 
@@ -21,7 +21,7 @@ async function fetchPrayerTimes() {
             const files = await fs.promises.readdir('./data', err => { if (err) console.error(err) });
             await Promise.all(files.map(file => fs.unlink(`./data/${file}`, err => { if (err) console.error(err) })));
 
-            const response = await fetch(`https://api.aladhan.com/v1/calendarByAddress/${currentYear}/${currentMonth + 1}?address=${city}, ${country}&iso8601=true&method=99&methodSettings=15,5 min,90 min&iso8601=true`)
+            const response = await fetch(`https://api.aladhan.com/v1/calendarByAddress/${currentYear}/${currentMonth + 1}?address=${city}, ${country}&iso8601=true&method=99&methodSettings=15,5 min,90 min`)
 
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
 
